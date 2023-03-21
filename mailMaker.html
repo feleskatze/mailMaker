@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html data-color-mode="dark" data-dark-theme="dark_high_contrast">
+
+<head>
+    <link href="https://unpkg.com/@primer/css@^20.2.4/dist/primer.css" rel="stylesheet" />
+
+</head>
+
+<body>
+
+    <!-- 
+id, name, 変数
+メール送信日
+sendMailDate
+
+作業開始日時
+workStartDatetime
+        作業開始日 workStartDatetime_date
+        作業開始時間 workStartDatetime_time
+        作業開始曜日 workStartDatetime_weekday
+
+作業終了日時
+workEndDatetime
+        作業終了日 workEndDatetime_date
+        作業終了時間 workEndDatetime_time
+        作業終了曜日 workEndDatetime_weekday
+
+前回通知日
+sentMailDate
+        前回通知曜日 sentMailDate_weekday
+
+作業概要
+workOverview
+
+作業内容
+workContent
+
+作業時の影響
+workInfluence
+
+連絡区分
+mailType
+        事前通知 mailType_prior
+        開始通知 mailType_start
+        終了通知 mailType_end
+
+サービス区分
+serviceType
+
+件名
+mailSubject
+
+本文
+mailBody
+
+
+    -->
+    <div class="p-responsive pt-3 mr-03">
+        <!-- 一番外側 見栄えのため -->
+
+        <div>
+            <div>
+                <label>
+                    <button class="btn" id="file_read">ファイル読込</button>
+                </label>
+                <label>
+                    <button class="btn" id="file_write">ファイル出力
+                    </button>
+                </label>
+            </div>
+
+
+            <form id="inputForm">
+
+                <div class="form-group">
+                    <div class=" form-group-header">
+                        <label>メール送信日</label>
+                    </div>
+                    <div class="form-group-body">
+                        <input type="date" class="form-control" id="sendMailDate">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class=" form-group-header">
+                        <label>作業開始日時</label>
+                    </div>
+                    <input type="datetime-local" class="form-control" step="600" id="workStartDatetime">
+                </div>
+
+                <div class="form-group">
+                    <div class=" form-group-header">
+                        <label>作業終了日時</label>
+                    </div>
+                    <input type="datetime-local" class="form-control" step="600" id="workEndDatetime">
+                </div>
+
+                <div class="form-group">
+                    <div class=" form-group-header">
+                        <label>前回通知日(事前通知時は未指定で可)</label>
+                    </div>
+                    <input type="date" class="form-control" id="sentMailDate">
+                </div>
+
+                <div class="form-group">
+                    <div class=" form-group-header">
+                        <lable>作業概要</lable>
+                    </div>
+                    <input type="text" class="form-control" style="width: 40em;" id="workOverview">
+                </div>
+
+                <div class="form-group">
+                    <div class=" form-group-header">
+                        <lable>作業内容</lable>
+                    </div>
+                    <input type="text" class="form-control" style="width: 40em;" id="workContent">
+                </div>
+
+                <div class="form-group">
+                    <div class=" form-group-header">
+                        <lable>作業時の影響</lable>
+                    </div>
+                    <div class="form-group-body" style="height: 6em; width: 40em; overflow: hidden;">
+                        <textarea class="form-control height-full width-full" cols="40" rows="6"
+                            id="workInfluence"> </textarea>
+                    </div>
+                </div>
+
+
+                <div class=" form-group">
+                    <div class=" form-group-header">
+                        <label>連絡区分</label>
+                    </div>
+                    <div class="radio-group">
+                        <input type="radio" name="mailType" id="mailType_prior" class="radio-input"
+                            value="mailType_prior">
+                        <label for="mailType_prior" class="radio-label">事前通知</label>
+                        <input type="radio" name="mailType" id="mailType_start" class="radio-input"
+                            value="mailType_start">
+                        <label for="mailType_start" class="radio-label">開始通知</label>
+                        <input type="radio" name="mailType" id="mailType_end" class="radio-input" value="mailType_end">
+                        <label for="mailType_end" class="radio-label">終了通知</label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class=" form-group-header">
+                        <label>サービス区分</label>
+                    </div>
+                    <div class="form-checkbox">
+                        <input type="radio" name="serviceType" id="service_connect">
+                        <label for="service_connect">コネクティビティサービス</label>
+                    </div>
+                    <div class="form-checkbox">
+                        <input type="radio" name="serviceType" id="service_manage">
+                        <label for="service_manage">マネージドサービス</label>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div style="height: 3em;"></div>
+        <div class="border"></div>
+        <!-- メール文表示 -->
+        <div>
+            <form>
+                <div class="form-group ">
+                    <div class="form-group-header">
+                        <label>件名</label>
+                    </div>
+                    <div class="form-group-body">
+                        <input type="text" class="form-control" style="width: 40em;" id="mailSubject">
+                    </div>
+
+                    <div class="form-group-header">
+                        <label>本文</label>
+                    </div>
+                    <div class="form-group-body" style="height: 50em; width: 40em;">
+                        <textarea class="form-control height-full width-full" style="width: 30em;"
+                            id="mailBody"></textarea>
+                    </div>
+
+            </form>
+        </div>
+
+    </div>
+
+
+
+    <!-- javascript -->
+    <script type="text/javascript">
+        window.onload = function () {
+            pushValue();
+            makeHTML()
+            var formObject = document.getElementById("inputForm");
+            for (let i = 0; i < formObject.length; i++) {
+                formObject.elements[i].onkeyup = function () {
+                    pushValue();
+                    makeHTML();
+                };
+                formObject.elements[i].onchange = function () {
+                    pushValue();
+                    makeHTML();
+                };
+            }
+        }
+
+        // メール本文の作成
+        function pushValue() {
+            let formObject = document.getElementById("inputForm");
+            // document.getElementById("sendMailDate").value = formObject.sendMailDate.value;
+            // document.getElementById("workStartDatetime").value = formObject.workStartDatetime.value;
+            // document.getElementById("workEndDatetime").value = formObject.workEndDatetime.value;
+            // document.getElementById("sentMailDate").value = formObject.sentMailDate.value;
+
+            // document.getElementById("workOverview").value = formObject.workOverview.value;
+
+            // document.getElementById("workContent").value = formObject.workContent.value;
+            // document.getElementById("workInfluence").value = formObject.workInfluence.value;
+            // document.getElementById("mailType").value = formObject.mailType.value;
+            // document.getElementById("serviceType").value = formObject.serviceType.value;
+
+
+            let mailSubject = "【】"
+            document.getElementById("mailSubject").value = mailSubject;
+
+        }
+
+        // サポートサイト用HTMKの作成
+        function makeHTML() {
+            let body = document.getElementById("mailBody").value;
+            let htmlString = [
+                `<!DOCTYPE html>`,
+                `<html>`,
+                `<head>`,
+                `<title>ダウンロードするHTML</title>`,
+                `</head>`,
+                `<body> `,
+                `${body} `,
+                ` </body> `,
+                `</html> `,
+            ].join(`\n`);
+
+            let blob = new Blob([htmlString], { type: 'text/html' });
+            let url = URL.createObjectURL(blob);
+            let downloadLink = document.createElement('a');
+            downloadLink.href = url;
+            downloadLink.download = 'm.html';
+            downloadLink.innerHTML = 'サポートサイト用HTMLダウンロード';
+
+            document.body.appendChild(downloadLink);
+        }
+    </script>
+
+</body>
+
+</html>
